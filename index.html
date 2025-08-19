@@ -247,6 +247,7 @@
         td {
             padding: 15px;
             border-bottom: 1px solid #e0e0e0;
+            vertical-align: middle;
         }
 
         .rank {
@@ -295,6 +296,10 @@
 
         .student-name {
             font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 300px;
         }
 
         .gender-icon {
@@ -318,10 +323,17 @@
             color: white;
         }
 
-        .stars {
+        .stars-container {
             display: flex;
             align-items: center;
             gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .stars-count {
+            white-space: nowrap;
+            margin-left: 5px;
+            font-weight: bold;
         }
 
         .star {
@@ -329,13 +341,20 @@
             font-size: 1.3rem;
         }
 
+        .add-stars-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+
         .points-input {
-            width: 70px;
-            padding: 8px 12px;
+            width: 60px;
+            padding: 8px;
             border: 2px solid #3498db;
             border-radius: 8px;
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-family: 'Comic Neue', cursive;
             transition: all 0.3s ease;
         }
@@ -344,6 +363,25 @@
             outline: none;
             border-color: #f1c40f;
             box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.3);
+        }
+
+        .add-stars-btn {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-family: 'Comic Neue', cursive;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+
+        .add-stars-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
         }
 
         .save-notice {
@@ -368,24 +406,6 @@
             font-weight: 700;
             display: none;
             animation: fadeInOut 3s ease;
-        }
-
-        .add-stars-btn {
-            background: #2ecc71;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 15px;
-            font-family: 'Comic Neue', cursive;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-left: 10px;
-        }
-
-        .add-stars-btn:hover {
-            background: #27ae60;
-            transform: translateY(-2px);
         }
 
         .user-info {
@@ -524,7 +544,7 @@
             }
             
             .points-input {
-                width: 60px;
+                width: 50px;
                 padding: 6px;
             }
             
@@ -549,6 +569,15 @@
                 justify-content: center;
                 margin-top: 15px;
                 width: 100%;
+            }
+            
+            .student-name {
+                max-width: 150px;
+            }
+            
+            .add-stars-container {
+                flex-wrap: wrap;
+                justify-content: flex-end;
             }
         }
     </style>
@@ -1105,27 +1134,32 @@
                 
                 // Stars cell
                 const starsCell = document.createElement('td');
-                starsCell.classList.add('stars');
+                const starsContainer = document.createElement('div');
+                starsContainer.classList.add('stars-container');
                 
-                // Add star icons
+                // Add star icons (limited to 5 stars)
                 const starCount = student.stars[subject];
-                for (let i = 0; i < starCount; i++) {
+                const starsToShow = Math.min(starCount, 5);
+                
+                for (let i = 0; i < starsToShow; i++) {
                     const starIcon = document.createElement('i');
                     starIcon.classList.add('fas', 'fa-star', 'star');
-                    starsCell.appendChild(starIcon);
+                    starsContainer.appendChild(starIcon);
                 }
                 
                 // Add star count text
                 const starCountText = document.createElement('span');
-                starCountText.textContent = ` (${starCount})`;
-                starsCell.appendChild(starCountText);
+                starCountText.classList.add('stars-count');
+                starCountText.textContent = starCount;
+                starsContainer.appendChild(starCountText);
+                
+                starsCell.appendChild(starsContainer);
                 
                 // Add stars cell
                 const addStarsCell = document.createElement('td');
                 
-                const inputGroup = document.createElement('div');
-                inputGroup.style.display = 'flex';
-                inputGroup.style.alignItems = 'center';
+                const addStarsContainer = document.createElement('div');
+                addStarsContainer.classList.add('add-stars-container');
                 
                 const input = document.createElement('input');
                 input.type = 'number';
@@ -1144,9 +1178,9 @@
                     addStars(student.id, starsToAdd, subject);
                 });
                 
-                inputGroup.appendChild(input);
-                inputGroup.appendChild(button);
-                addStarsCell.appendChild(inputGroup);
+                addStarsContainer.appendChild(input);
+                addStarsContainer.appendChild(button);
+                addStarsCell.appendChild(addStarsContainer);
                 
                 // Append all cells to the row
                 row.appendChild(rankCell);
