@@ -1,60 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Keep all your existing head content -->
-    <!-- Add Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Sign Up</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <style>
-        /* Keep all your existing styles */
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            padding: 40px 32px;
+            width: 350px;
+            max-width: 90vw;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #764ba2;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+        }
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: linear-gradient(90deg, #764ba2, #667eea);
+        }
+        .toggle {
+            text-align: center;
+            margin-top: 18px;
+        }
+        .toggle a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .error-message {
+            color: #ff4444;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .success-message {
+            color: #00C851;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
-    <!-- Keep all your existing HTML -->
-    <!-- Make sure you have these elements in your HTML -->
-    <form id="loginForm">
-        <input id="login-username" type="text">
-        <input id="login-password" type="password">
-        <div id="loginError"></div>
-    </form>
-    
-    <form id="signupForm">
-        <input id="signup-username" type="text">
-        <input id="signup-email" type="email">
-        <input id="signup-password" type="password">
-        <div id="signupError"></div>
-        <div id="signupSuccess"></div>
-    </form>
+    <div class="container" id="login-container">
+        <h2 id="form-title">Login</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Login</button>
+            <div id="login-error" class="error-message"></div>
+        </form>
+        <form id="signup-form" style="display:none;">
+            <div class="form-group">
+                <label for="signup-username">Username</label>
+                <input type="text" id="signup-username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="signup-email">Email</label>
+                <input type="email" id="signup-email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="signup-password">Password</label>
+                <input type="password" id="signup-password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Sign Up</button>
+            <div id="signup-error" class="error-message"></div>
+            <div id="signup-success" class="success-message"></div>
+        </form>
+        <div class="toggle">
+            <span id="toggle-text">Don't have an account? <a id="show-signup">Sign Up</a></span>
+        </div>
+    </div>
 
     <script>
-        // Firebase configuration (replace with your actual config)
+        // Firebase configuration - REPLACE WITH YOUR ACTUAL FIREBASE CONFIG
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyABC123XYZ456DEF789GHI",
+            authDomain: "your-project-id.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project-id.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abc123def456ghi789jkl"
         };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const db = firebase.firestore();
 
-        // Get form elements
-        const loginForm = document.getElementById('loginForm');
-        const signupForm = document.getElementById('signupForm');
-        const loginError = document.getElementById('loginError');
-        const signupError = document.getElementById('signupError');
-        const signupSuccess = document.getElementById('signupSuccess');
+        // DOM elements
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const formTitle = document.getElementById('form-title');
+        const toggleText = document.getElementById('toggle-text');
+        const showSignup = document.getElementById('show-signup');
+        const loginError = document.getElementById('login-error');
+        const signupError = document.getElementById('signup-error');
+        const signupSuccess = document.getElementById('signup-success');
 
-        // Modified login function
+        // Toggle between login and signup forms
+        showSignup.onclick = function() {
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+            formTitle.textContent = 'Sign Up';
+            toggleText.innerHTML = 'Already have an account? <a id="show-login">Login</a>';
+            document.getElementById('show-login').onclick = showLogin;
+            loginError.textContent = '';
+            signupError.textContent = '';
+            signupSuccess.textContent = '';
+        };
+
+        function showLogin() {
+            loginForm.style.display = 'block';
+            signupForm.style.display = 'none';
+            formTitle.textContent = 'Login';
+            toggleText.innerHTML = "Don't have an account? <a id='show-signup'>Sign Up</a>";
+            document.getElementById('show-signup').onclick = showSignup.onclick;
+            loginError.textContent = '';
+            signupError.textContent = '';
+            signupSuccess.textContent = '';
+        }
+
+        // Login form submission
         loginForm.onsubmit = function(e) {
             e.preventDefault();
             loginError.textContent = '';
-            const email = document.getElementById('login-username').value + "@yourdomain.com"; // Or use email directly
+            const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             
             auth.signInWithEmailAndPassword(email, password)
@@ -62,18 +182,25 @@
                     // Signed in
                     const user = userCredential.user;
                     localStorage.setItem('currentUser', JSON.stringify({
-                        uid: user.uid,
-                        email: user.email,
+                        email: email,
                         isAuthenticated: true
                     }));
                     window.location.href = 'index.html';
                 })
                 .catch((error) => {
-                    loginError.textContent = error.message;
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    if (errorCode === 'auth/user-not-found') {
+                        loginError.textContent = 'Email not found. Please sign up first.';
+                    } else if (errorCode === 'auth/wrong-password') {
+                        loginError.textContent = 'Incorrect password. Please try again.';
+                    } else {
+                        loginError.textContent = errorMessage;
+                    }
                 });
         };
 
-        // Modified signup function
+        // Signup form submission
         signupForm.onsubmit = function(e) {
             e.preventDefault();
             signupError.textContent = '';
@@ -83,7 +210,7 @@
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             
-            // Validation
+            // Basic validation
             if (username.length < 4) {
                 signupError.textContent = 'Username must be at least 4 characters.';
                 return;
@@ -99,54 +226,34 @@
                 return;
             }
             
-            // Create user with Firebase Auth
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    // User created
-                    const user = userCredential.user;
-                    
-                    // Save additional user data to Firestore
-                    return db.collection('users').doc(user.uid).set({
-                        username: username,
-                        email: email,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                })
-                .then(() => {
+                    // Signed up
                     signupSuccess.textContent = 'Registration successful! You can now login.';
                     document.getElementById('signup-username').value = '';
                     document.getElementById('signup-email').value = '';
                     document.getElementById('signup-password').value = '';
                     
-                    setTimeout(() => {
-                        // Assuming you have a showLogin function
-                        if (typeof showLogin === 'function') {
-                            showLogin();
-                        }
-                    }, 2000);
+                    // Auto-switch to login form after 2 seconds
+                    setTimeout(showLogin, 2000);
                 })
                 .catch((error) => {
-                    signupError.textContent = error.message;
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    if (errorCode === 'auth/email-already-in-use') {
+                        signupError.textContent = 'Email already registered. Please use another email.';
+                    } else {
+                        signupError.textContent = errorMessage;
+                    }
                 });
         };
 
-        // Check auth state
+        // Check if user is already authenticated
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // User is signed in
-                localStorage.setItem('currentUser', JSON.stringify({
-                    uid: user.uid,
-                    email: user.email,
-                    isAuthenticated: true
-                }));
                 window.location.href = 'index.html';
             }
         });
-
-        // Initial auth check
-        if (JSON.parse(localStorage.getItem('currentUser'))) {
-            window.location.href = 'index.html';
-        }
     </script>
 </body>
 </html>
