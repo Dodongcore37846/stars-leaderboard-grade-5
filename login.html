@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Sign Up</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <title>Simple Login & Sign Up</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            font-family: 'Roboto', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -25,23 +24,23 @@
         
         .container {
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             width: 100%;
-            max-width: 440px;
-            padding: 40px;
+            max-width: 400px;
+            padding: 30px;
             position: relative;
             overflow: hidden;
         }
         
         .logo-container {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         
         .logo {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             border-radius: 50%;
             display: flex;
@@ -51,16 +50,16 @@
         }
         
         .logo i {
-            font-size: 36px;
+            font-size: 32px;
             color: white;
         }
         
         h2 {
             text-align: center;
             color: #333;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             font-weight: 700;
-            font-size: 28px;
+            font-size: 24px;
         }
         
         .form-group {
@@ -77,9 +76,9 @@
         
         input {
             width: 100%;
-            padding: 15px 15px 15px 45px;
+            padding: 14px 14px 14px 40px;
             border: 2px solid #ddd;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 16px;
             transition: all 0.3s;
         }
@@ -95,18 +94,18 @@
             left: 15px;
             top: 40px;
             color: #2575fc;
-            font-size: 18px;
+            font-size: 16px;
         }
         
         button {
             width: 100%;
-            padding: 15px;
+            padding: 14px;
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: 700;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             margin-top: 10px;
@@ -119,9 +118,9 @@
         
         .toggle {
             text-align: center;
-            margin-top: 25px;
+            margin-top: 20px;
             color: #666;
-            font-size: 16px;
+            font-size: 15px;
         }
         
         .toggle a {
@@ -137,29 +136,33 @@
         }
         
         .message {
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
             text-align: center;
             font-weight: 500;
+            display: none;
         }
         
         .error {
             background-color: #ffebee;
             color: #d32f2f;
             border: 1px solid #ffcdd2;
+            display: block;
         }
         
         .success {
             background-color: #e8f5e9;
             color: #388e3c;
             border: 1px solid #c8e6c9;
+            display: block;
         }
         
         .info {
             background-color: #e3f2fd;
             color: #1976d2;
             border: 1px solid #bbdefb;
+            display: block;
         }
         
         .password-toggle {
@@ -170,39 +173,13 @@
             color: #2575fc;
         }
         
-        .redirect-countdown {
-            text-align: center;
-            margin-top: 20px;
-            font-weight: 500;
-            color: #666;
-        }
-        
-        .device-info {
-            background-color: #f5f5f5;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-        
-        .device-info h3 {
-            margin-bottom: 10px;
-            color: #333;
-            text-align: center;
-        }
-        
-        .device-info p {
-            margin-bottom: 5px;
-            color: #666;
-        }
-        
         @media (max-width: 480px) {
             .container {
-                padding: 30px 20px;
+                padding: 25px 20px;
             }
             
             h2 {
-                font-size: 24px;
+                font-size: 22px;
             }
             
             input {
@@ -217,7 +194,7 @@
             <div class="logo">
                 <i class="fas fa-user-lock"></i>
             </div>
-            <h2>Grade V-Lugatiman Login</h2>
+            <h2>Account Login</h2>
         </div>
         
         <div id="login-container">
@@ -232,11 +209,6 @@
                     <i class="fas fa-key input-icon"></i>
                     <input type="password" id="login-password" required placeholder="Enter your password">
                     <i class="fas fa-eye password-toggle" id="login-password-toggle"></i>
-                </div>
-                <div class="form-group">
-                    <label for="login-device">Device Identifier</label>
-                    <i class="fas fa-laptop input-icon"></i>
-                    <input type="text" id="login-device" placeholder="Optional: Enter device name">
                 </div>
                 <button type="submit">Sign In</button>
                 <div id="login-message" class="message"></div>
@@ -278,17 +250,6 @@
                 Already have an account? <a id="show-login">Sign In</a>
             </div>
         </div>
-        
-        <div class="device-info">
-            <h3>Device Information</h3>
-            <p id="browser-info">Browser: </p>
-            <p id="os-info">Operating System: </p>
-            <p id="screen-info">Screen Resolution: </p>
-        </div>
-        
-        <div id="redirect-info" class="redirect-countdown" style="display:none;">
-            You will be redirected to the leaderboard in <span id="countdown">5</span> seconds
-        </div>
     </div>
 
     <script>
@@ -301,41 +262,6 @@
         const showLogin = document.getElementById('show-login');
         const loginMessage = document.getElementById('login-message');
         const signupMessage = document.getElementById('signup-message');
-        const redirectInfo = document.getElementById('redirect-info');
-        const countdownElement = document.getElementById('countdown');
-        
-        // Device info elements
-        const browserInfo = document.getElementById('browser-info');
-        const osInfo = document.getElementById('os-info');
-        const screenInfo = document.getElementById('screen-info');
-        
-        // Display device information
-        function displayDeviceInfo() {
-            // Browser detection
-            const userAgent = navigator.userAgent;
-            let browserName = "Unknown Browser";
-            
-            if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) browserName = "Google Chrome";
-            else if (userAgent.includes("Firefox")) browserName = "Mozilla Firefox";
-            else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) browserName = "Safari";
-            else if (userAgent.includes("Edg")) browserName = "Microsoft Edge";
-            else if (userAgent.includes("Opera") || userAgent.includes("OPR/")) browserName = "Opera";
-            
-            // OS detection
-            let osName = "Unknown OS";
-            if (userAgent.includes("Windows")) osName = "Windows";
-            else if (userAgent.includes("Mac")) osName = "Mac OS";
-            else if (userAgent.includes("Linux")) osName = "Linux";
-            else if (userAgent.includes("Android")) osName = "Android";
-            else if (userAgent.includes("like Mac")) osName = "iOS";
-            
-            // Screen resolution
-            const screenResolution = `${screen.width} x ${screen.height}`;
-            
-            browserInfo.textContent = `Browser: ${browserName}`;
-            osInfo.textContent = `Operating System: ${osName}`;
-            screenInfo.textContent = `Screen Resolution: ${screenResolution}`;
-        }
         
         // Password toggle functionality
         document.getElementById('login-password-toggle').addEventListener('click', function() {
@@ -377,79 +303,45 @@
         
         // Validate email format
         function isValidEmail(email) {
-            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            return re.test(String(email).toLowerCase());
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
         }
         
-        // Simulate login process with username
+        // Simulate login process
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const username = document.getElementById('login-username').value;
             const password = document.getElementById('login-password').value;
-            const device = document.getElementById('login-device').value || getDeviceName();
             
-            loginMessage.textContent = `Signing in from ${device}...`;
+            loginMessage.textContent = 'Signing in...';
             loginMessage.className = 'message info';
             
             // Simulate API call
             setTimeout(() => {
                 // Check if user exists and password is correct
-                const users = JSON.parse(localStorage.getItem('grade5Users') || '[]');
+                const users = JSON.parse(localStorage.getItem('appUsers') || '[]');
                 const user = users.find(u => u.username === username && u.password === password);
                 
                 if (user) {
-                    loginMessage.textContent = `Login successful from ${device}! Redirecting...`;
+                    loginMessage.textContent = 'Login successful!';
                     loginMessage.className = 'message success';
                     
-                    // Store login session in localStorage
-                    const sessionData = {
+                    // Store login session
+                    localStorage.setItem('userSession', JSON.stringify({
                         username: username,
-                        device: device,
-                        timestamp: new Date().toISOString(),
-                        userAgent: navigator.userAgent
-                    };
+                        timestamp: new Date().toISOString()
+                    }));
                     
-                    localStorage.setItem('userSession', JSON.stringify(sessionData));
-                    
-                    // Show redirect countdown
-                    redirectInfo.style.display = 'block';
-                    let countdown = 5;
-                    
-                    const countdownInterval = setInterval(() => {
-                        countdown--;
-                        countdownElement.textContent = countdown;
-                        
-                        if (countdown <= 0) {
-                            clearInterval(countdownInterval);
-                            window.location.href = 'leaderboard.html';
-                        }
-                    }, 1000);
+                    // Redirect after successful login
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
                 } else {
                     loginMessage.textContent = 'Invalid username or password. Please try again.';
                     loginMessage.className = 'message error';
                 }
             }, 1000);
         });
-        
-        // Generate a device name based on browser and OS
-        function getDeviceName() {
-            const userAgent = navigator.userAgent;
-            let deviceType = "Desktop";
-            
-            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
-                deviceType = "Mobile";
-            } else if (/Tablet|iPad/i.test(userAgent)) {
-                deviceType = "Tablet";
-            }
-            
-            const os = userAgent.includes("Windows") ? "Windows" : 
-                      userAgent.includes("Mac") ? "Mac" : 
-                      userAgent.includes("Linux") ? "Linux" : 
-                      userAgent.includes("Android") ? "Android" :
-                      userAgent.includes("iOS") ? "iOS" : "Unknown OS";
-            
-            return `${deviceType} (${os})`;
-        }
         
         // Simulate signup process
         signupForm.addEventListener('submit', function(e) {
@@ -489,7 +381,7 @@
             
             // Simulate API call
             setTimeout(() => {
-                const users = JSON.parse(localStorage.getItem('grade5Users') || '[]');
+                const users = JSON.parse(localStorage.getItem('appUsers') || '[]');
                 
                 // Check if username already exists
                 if (users.some(user => user.username === username)) {
@@ -514,7 +406,7 @@
                 });
                 
                 // Save to localStorage
-                localStorage.setItem('grade5Users', JSON.stringify(users));
+                localStorage.setItem('appUsers', JSON.stringify(users));
                 
                 signupMessage.textContent = 'Account created successfully! You can now log in.';
                 signupMessage.className = 'message success';
@@ -532,30 +424,18 @@
         
         // Check for existing session on page load
         window.addEventListener('load', function() {
-            displayDeviceInfo();
-            
-            // Check if user is already logged in
             const existingSession = localStorage.getItem('userSession');
             if (existingSession) {
                 const session = JSON.parse(existingSession);
-                loginMessage.textContent = `Welcome back! You are logged in from ${session.device}`;
+                loginMessage.textContent = `Welcome back, ${session.username}! Redirecting...`;
                 loginMessage.className = 'message info';
                 
-                // Show redirect countdown
-                redirectInfo.style.display = 'block';
-                let countdown = 5;
-                
-                const countdownInterval = setInterval(() => {
-                    countdown--;
-                    countdownElement.textContent = countdown;
-                    
-                    if (countdown <= 0) {
-                        clearInterval(countdownInterval);
-                        window.location.href = 'leaderboard.html';
-                    }
-                }, 1000);
+                // Redirect to dashboard after a delay
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
             } else {
-                loginMessage.textContent = 'Enter your credentials to sign in';
+                loginMessage.textContent = 'Please enter your credentials to sign in';
                 loginMessage.className = 'message info';
                 
                 setTimeout(() => {
