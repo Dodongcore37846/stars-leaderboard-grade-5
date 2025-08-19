@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Username Authentication</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
+    <title>Login & Sign Up</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -217,7 +217,7 @@
             <div class="logo">
                 <i class="fas fa-user-lock"></i>
             </div>
-            <h2>Username Authentication</h2>
+            <h2>Grade V-Lugatiman Login</h2>
         </div>
         
         <div id="login-container">
@@ -287,7 +287,7 @@
         </div>
         
         <div id="redirect-info" class="redirect-countdown" style="display:none;">
-            You will be redirected to the home page in <span id="countdown">5</span> seconds
+            You will be redirected to the leaderboard in <span id="countdown">5</span> seconds
         </div>
     </div>
 
@@ -386,11 +386,15 @@
             
             // Simulate API call
             setTimeout(() => {
-                if (username && password.length >= 6) {
+                // Check if user exists and password is correct
+                const users = JSON.parse(localStorage.getItem('grade5Users') || [];
+                const user = users.find(u => u.username === username && u.password === password);
+                
+                if (user) {
                     loginMessage.textContent = `Login successful from ${device}! Redirecting...`;
                     loginMessage.className = 'message success';
                     
-                    // Store login session in localStorage (simulating remote login capability)
+                    // Store login session in localStorage
                     const sessionData = {
                         username: username,
                         device: device,
@@ -402,7 +406,7 @@
                     
                     // Redirect after successful login
                     setTimeout(() => {
-                        window.location.href = 'index.html';
+                        window.location.href = 'leaderboard.html';
                     }, 1500);
                 } else {
                     loginMessage.textContent = 'Invalid username or password. Please try again.';
@@ -459,50 +463,39 @@
             signupMessage.textContent = 'Creating your account...';
             signupMessage.className = 'message info';
             
-            // Simulate API call with random success/failure
+            // Simulate API call
             setTimeout(() => {
-                // Randomly determine success or failure (80% success rate for demo)
-                const isSuccess = Math.random() > 0.2;
+                const users = JSON.parse(localStorage.getItem('grade5Users') || []);
                 
-                if (isSuccess) {
-                    signupMessage.textContent = 'Account created successfully! You can now log in.';
-                    signupMessage.className = 'message success';
-                    
-                    // Store user data in localStorage (simulating database)
-                    const userData = {
-                        username: username,
-                        email: email,
-                        password: password, // In real app, this would be hashed
-                        createdAt: new Date().toISOString()
-                    };
-                    
-                    localStorage.setItem('user_' + username, JSON.stringify(userData));
-                    
-                    // Switch to login after successful registration
-                    setTimeout(() => {
-                        signupContainer.style.display = 'none';
-                        loginContainer.style.display = 'block';
-                        signupForm.reset();
-                        clearMessages();
-                    }, 2000);
-                } else {
-                    signupMessage.textContent = 'Registration failed. Please try again later.';
+                // Check if username already exists
+                if (users.some(user => user.username === username)) {
+                    signupMessage.textContent = 'Username already taken. Please choose another.';
                     signupMessage.className = 'message error';
-                    
-                    // Show redirect countdown on failure
-                    redirectInfo.style.display = 'block';
-                    let countdown = 5;
-                    
-                    const countdownInterval = setInterval(() => {
-                        countdown--;
-                        countdownElement.textContent = countdown;
-                        
-                        if (countdown <= 0) {
-                            clearInterval(countdownInterval);
-                            window.location.href = 'index.html';
-                        }
-                    }, 1000);
+                    return;
                 }
+                
+                // Add new user
+                users.push({
+                    username: username,
+                    email: email,
+                    password: password,
+                    createdAt: new Date().toISOString()
+                });
+                
+                // Save to localStorage
+                localStorage.setItem('grade5Users', JSON.stringify(users));
+                
+                signupMessage.textContent = 'Account created successfully! You can now log in.';
+                signupMessage.className = 'message success';
+                
+                // Switch to login after successful registration
+                setTimeout(() => {
+                    signupContainer.style.display = 'none';
+                    loginContainer.style.display = 'block';
+                    signupForm.reset();
+                    clearMessages();
+                }, 2000);
+                
             }, 1500);
         });
         
@@ -510,16 +503,17 @@
         window.addEventListener('load', function() {
             displayDeviceInfo();
             
+            // Check if user is already logged in
             const existingSession = localStorage.getItem('userSession');
             if (existingSession) {
                 const session = JSON.parse(existingSession);
                 loginMessage.textContent = `Welcome back! You are logged in from ${session.device}`;
                 loginMessage.className = 'message info';
                 
+                // Redirect to leaderboard after a delay
                 setTimeout(() => {
-                    loginMessage.textContent = 'You can log in with a different account if needed';
-                    loginMessage.className = 'message';
-                }, 3000);
+                    window.location.href = 'leaderboard.html';
+                }, 2000);
             } else {
                 loginMessage.textContent = 'Enter your credentials to sign in';
                 loginMessage.className = 'message info';
