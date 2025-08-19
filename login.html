@@ -173,6 +173,14 @@
             color: #2575fc;
         }
         
+        .redirect-countdown {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 500;
+            color: #666;
+            display: none;
+        }
+        
         @media (max-width: 480px) {
             .container {
                 padding: 25px 20px;
@@ -250,6 +258,10 @@
                 Already have an account? <a id="show-login">Sign In</a>
             </div>
         </div>
+        
+        <div id="redirect-info" class="redirect-countdown">
+            You will be redirected to the homepage in <span id="countdown">5</span> seconds
+        </div>
     </div>
 
     <script>
@@ -262,6 +274,8 @@
         const showLogin = document.getElementById('show-login');
         const loginMessage = document.getElementById('login-message');
         const signupMessage = document.getElementById('signup-message');
+        const redirectInfo = document.getElementById('redirect-info');
+        const countdownElement = document.getElementById('countdown');
         
         // Password toggle functionality
         document.getElementById('login-password-toggle').addEventListener('click', function() {
@@ -307,6 +321,22 @@
             return re.test(email);
         }
         
+        // Start redirect countdown
+        function startRedirectCountdown() {
+            redirectInfo.style.display = 'block';
+            let countdown = 5;
+            
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    window.location.href = 'index.html';
+                }
+            }, 1000);
+        }
+        
         // Simulate login process
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -332,10 +362,8 @@
                         timestamp: new Date().toISOString()
                     }));
                     
-                    // Redirect after successful login
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1500);
+                    // Start redirect countdown
+                    startRedirectCountdown();
                 } else {
                     loginMessage.textContent = 'Invalid username or password. Please try again.';
                     loginMessage.className = 'message error';
@@ -430,10 +458,8 @@
                 loginMessage.textContent = `Welcome back, ${session.username}! Redirecting...`;
                 loginMessage.className = 'message info';
                 
-                // Redirect to dashboard after a delay
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 2000);
+                // Start redirect countdown
+                startRedirectCountdown();
             } else {
                 loginMessage.textContent = 'Please enter your credentials to sign in';
                 loginMessage.className = 'message info';
