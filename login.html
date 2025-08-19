@@ -134,7 +134,7 @@
         };
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
         // DOM elements
@@ -147,70 +147,68 @@
         const signupError = document.getElementById('signup-error');
         const signupSuccess = document.getElementById('signup-success');
 
-        // Toggle between login and signup forms
-        showSignup.onclick = function() {
-            loginForm.style.display = 'none';
-            signupForm.style.display = 'block';
-            formTitle.textContent = 'Sign Up';
-            toggleText.innerHTML = 'Already have an account? <a id="show-login">Login</a>';
-            document.getElementById('show-login').onclick = showLogin;
-            loginError.textContent = '';
-            signupError.textContent = '';
-            signupSuccess.textContent = '';
-        };
-
-        function showLogin() {
-            loginForm.style.display = 'block';
-            signupForm.style.display = 'none';
-            formTitle.textContent = 'Login';
-            toggleText.innerHTML = "Don't have an account? <a id='show-signup'>Sign Up</a>";
-            document.getElementById('show-signup').onclick = showSignup.onclick;
+        // Form toggle functionality
+        function toggleForms(showLoginForm) {
+            if (showLoginForm) {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+                formTitle.textContent = 'Login';
+                toggleText.innerHTML = "Don't have an account? <a id='show-signup'>Sign Up</a>";
+                document.getElementById('show-signup').onclick = () => toggleForms(false);
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                formTitle.textContent = 'Sign Up';
+                toggleText.innerHTML = 'Already have an account? <a id="show-login">Login</a>';
+                document.getElementById('show-login').onclick = () => toggleForms(true);
+            }
             loginError.textContent = '';
             signupError.textContent = '';
             signupSuccess.textContent = '';
         }
 
+        // Initialize form toggle
+        showSignup.onclick = () => toggleForms(false);
+
         // Login form submission
-        loginForm.onsubmit = function(e) {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             loginError.textContent = '';
+            
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Signed in
-                    const user = userCredential.user;
-                    localStorage.setItem('currentUser', JSON.stringify({
-                        email: email,
-                        isAuthenticated: true
-                    }));
-                    window.location.href = 'index.html';
-                })
-                .catch((error) => {
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    if (errorCode === 'auth/user-not-found') {
-                        loginError.textContent = 'Email not found. Please sign up first.';
-                    } else if (errorCode === 'auth/wrong-password') {
-                        loginError.textContent = 'Incorrect password. Please try again.';
-                    } else {
-                        loginError.textContent = errorMessage;
-                    }
-                });
-        };
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                // Signed in successfully
+                localStorage.setItem('currentUser', JSON.stringify({
+                    email: email,
+                    isAuthenticated: true
+                }));
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Login error:', error);
+                if (error.code === 'auth/user-not-found') {
+                    loginError.textContent = 'Email not found. Please sign up first.';
+                } else if (error.code === 'auth/wrong-password') {
+                    loginError.textContent = 'Incorrect password. Please try again.';
+                } else {
+                    loginError.textContent = 'Login failed. Please try again later.';
+                }
+            }
+        });
 
         // Signup form submission
-        signupForm.onsubmit = function(e) {
+        signupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             signupError.textContent = '';
             signupSuccess.textContent = '';
             
-            const username = document.getElementById('signup-username').value;
-            const email = document.getElementById('signup-email').value;
+            const username = document.getElementById('signup-username').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
             const password = document.getElementById('signup-password').value;
             
-            // Basic validation
+            // Validation
             if (username.length < 4) {
                 signupError.textContent = 'Username must be at least 4 characters.';
                 return;
@@ -221,34 +219,36 @@
                 return;
             }
             
-            if (!email.endsWith('@gmail.com')) {
-                signupError.textContent = 'Please use a Gmail address to register.';
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                signupError.textContent = 'Please enter a valid email address.';
                 return;
             }
             
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Signed up
-                    signupSuccess.textContent = 'Registration successful! You can now login.';
-                    document.getElementById('signup-username').value = '';
-                    document.getElementById('signup-email').value = '';
-                    document.getElementById('signup-password').value = '';
-                    
-                    // Auto-switch to login form after 2 seconds
-                    setTimeout(showLogin, 2000);
-                })
-                .catch((error) => {
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    if (errorCode === 'auth/email-already-in-use') {
-                        signupError.textContent = 'Email already registered. Please use another email.';
-                    } else {
-                        signupError.textContent = errorMessage;
-                    }
-                });
-        };
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                // Signed up successfully
+                signupSuccess.textContent = 'Registration successful! You can now login.';
+                
+                // Clear form
+                document.getElementById('signup-username').value = '';
+                document.getElementById('signup-email').value = '';
+                document.getElementById('signup-password').value = '';
+                
+                // Switch to login form after 2 seconds
+                setTimeout(() => toggleForms(true), 2000);
+            } catch (error) {
+                console.error('Signup error:', error);
+                if (error.code === 'auth/email-already-in-use') {
+                    signupError.textContent = 'Email already registered. Please use another email.';
+                } else if (error.code === 'auth/invalid-email') {
+                    signupError.textContent = 'Please enter a valid email address.';
+                } else {
+                    signupError.textContent = 'Registration failed. Please try again later.';
+                }
+            }
+        });
 
-        // Check if user is already authenticated
+        // Check authentication state
         auth.onAuthStateChanged((user) => {
             if (user) {
                 window.location.href = 'index.html';
