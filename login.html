@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Auth Portal</title>
+    <title>Username Authentication</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -14,7 +14,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             font-family: 'Roboto', sans-serif;
             display: flex;
             justify-content: center;
@@ -42,7 +42,7 @@
         .logo {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -85,23 +85,23 @@
         }
         
         input:focus {
-            border-color: #667eea;
+            border-color: #6a11cb;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
         }
         
         .input-icon {
             position: absolute;
             left: 15px;
             top: 40px;
-            color: #764ba2;
+            color: #2575fc;
             font-size: 18px;
         }
         
         button {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             color: white;
             border: none;
             border-radius: 10px;
@@ -114,7 +114,7 @@
         
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
         }
         
         .toggle {
@@ -125,7 +125,7 @@
         }
         
         .toggle a {
-            color: #667eea;
+            color: #6a11cb;
             text-decoration: none;
             cursor: pointer;
             font-weight: 500;
@@ -167,13 +167,32 @@
             right: 15px;
             top: 40px;
             cursor: pointer;
-            color: #764ba2;
+            color: #2575fc;
         }
         
         .redirect-countdown {
             text-align: center;
             margin-top: 20px;
             font-weight: 500;
+            color: #666;
+        }
+        
+        .device-info {
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        .device-info h3 {
+            margin-bottom: 10px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .device-info p {
+            margin-bottom: 5px;
             color: #666;
         }
         
@@ -196,23 +215,28 @@
     <div class="container">
         <div class="logo-container">
             <div class="logo">
-                <i class="fas fa-lock"></i>
+                <i class="fas fa-user-lock"></i>
             </div>
-            <h2>Secure Authentication</h2>
+            <h2>Username Authentication</h2>
         </div>
         
         <div id="login-container">
             <form id="login-form">
                 <div class="form-group">
-                    <label for="login-email">Email Address</label>
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" id="login-email" required placeholder="Enter your email">
+                    <label for="login-username">Username</label>
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="login-username" required placeholder="Enter your username">
                 </div>
                 <div class="form-group">
                     <label for="login-password">Password</label>
                     <i class="fas fa-key input-icon"></i>
                     <input type="password" id="login-password" required placeholder="Enter your password">
                     <i class="fas fa-eye password-toggle" id="login-password-toggle"></i>
+                </div>
+                <div class="form-group">
+                    <label for="login-device">Device Identifier</label>
+                    <i class="fas fa-laptop input-icon"></i>
+                    <input type="text" id="login-device" placeholder="Optional: Enter device name">
                 </div>
                 <button type="submit">Sign In</button>
                 <div id="login-message" class="message"></div>
@@ -226,9 +250,9 @@
         <div id="signup-container" style="display:none;">
             <form id="signup-form">
                 <div class="form-group">
-                    <label for="signup-username">Full Name</label>
+                    <label for="signup-username">Username</label>
                     <i class="fas fa-user input-icon"></i>
-                    <input type="text" id="signup-username" required placeholder="Enter your full name">
+                    <input type="text" id="signup-username" required placeholder="Choose a username">
                 </div>
                 <div class="form-group">
                     <label for="signup-email">Email Address</label>
@@ -255,6 +279,13 @@
             </div>
         </div>
         
+        <div class="device-info">
+            <h3>Device Information</h3>
+            <p id="browser-info">Browser: </p>
+            <p id="os-info">Operating System: </p>
+            <p id="screen-info">Screen Resolution: </p>
+        </div>
+        
         <div id="redirect-info" class="redirect-countdown" style="display:none;">
             You will be redirected to the home page in <span id="countdown">5</span> seconds
         </div>
@@ -272,6 +303,38 @@
         const signupMessage = document.getElementById('signup-message');
         const redirectInfo = document.getElementById('redirect-info');
         const countdownElement = document.getElementById('countdown');
+        
+        // Device info elements
+        const browserInfo = document.getElementById('browser-info');
+        const osInfo = document.getElementById('os-info');
+        const screenInfo = document.getElementById('screen-info');
+        
+        // Display device information
+        function displayDeviceInfo() {
+            // Browser detection
+            const userAgent = navigator.userAgent;
+            let browserName = "Unknown Browser";
+            
+            if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) browserName = "Google Chrome";
+            else if (userAgent.includes("Firefox")) browserName = "Mozilla Firefox";
+            else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) browserName = "Safari";
+            else if (userAgent.includes("Edg")) browserName = "Microsoft Edge";
+            
+            // OS detection
+            let osName = "Unknown OS";
+            if (userAgent.includes("Windows")) osName = "Windows";
+            else if (userAgent.includes("Mac")) osName = "Mac OS";
+            else if (userAgent.includes("Linux")) osName = "Linux";
+            else if (userAgent.includes("Android")) osName = "Android";
+            else if (userAgent.includes("iOS")) osName = "iOS";
+            
+            // Screen resolution
+            const screenResolution = `${screen.width} x ${screen.height}`;
+            
+            browserInfo.textContent += browserName;
+            osInfo.textContent += osName;
+            screenInfo.textContent += screenResolution;
+        }
         
         // Password toggle functionality
         document.getElementById('login-password-toggle').addEventListener('click', function() {
@@ -311,31 +374,60 @@
             signupMessage.className = 'message';
         }
         
-        // Simulate login process
+        // Simulate login process with username
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const email = document.getElementById('login-email').value;
+            const username = document.getElementById('login-username').value;
             const password = document.getElementById('login-password').value;
+            const device = document.getElementById('login-device').value || getDeviceName();
             
-            loginMessage.textContent = 'Signing in...';
+            loginMessage.textContent = `Signing in from ${device}...`;
             loginMessage.className = 'message info';
             
             // Simulate API call
             setTimeout(() => {
-                if (email && password.length >= 6) {
-                    loginMessage.textContent = 'Login successful! Redirecting...';
+                if (username && password.length >= 6) {
+                    loginMessage.textContent = `Login successful from ${device}! Redirecting...`;
                     loginMessage.className = 'message success';
+                    
+                    // Store login session in localStorage (simulating remote login capability)
+                    const sessionData = {
+                        username: username,
+                        device: device,
+                        timestamp: new Date().toISOString(),
+                        userAgent: navigator.userAgent
+                    };
+                    
+                    localStorage.setItem('userSession', JSON.stringify(sessionData));
                     
                     // Redirect after successful login
                     setTimeout(() => {
                         window.location.href = 'index.html';
                     }, 1500);
                 } else {
-                    loginMessage.textContent = 'Invalid email or password. Please try again.';
+                    loginMessage.textContent = 'Invalid username or password. Please try again.';
                     loginMessage.className = 'message error';
                 }
             }, 1000);
         });
+        
+        // Generate a device name based on browser and OS
+        function getDeviceName() {
+            const userAgent = navigator.userAgent;
+            let deviceType = "Desktop";
+            
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
+                deviceType = "Mobile";
+            } else if (/Tablet|iPad/i.test(userAgent)) {
+                deviceType = "Tablet";
+            }
+            
+            const os = userAgent.includes("Windows") ? "Windows" : 
+                      userAgent.includes("Mac") ? "Mac" : 
+                      userAgent.includes("Linux") ? "Linux" : "Unknown OS";
+            
+            return `${deviceType} (${os})`;
+        }
         
         // Simulate signup process
         signupForm.addEventListener('submit', function(e) {
@@ -358,6 +450,12 @@
                 return;
             }
             
+            if (username.length < 4) {
+                signupMessage.textContent = 'Username must be at least 4 characters long.';
+                signupMessage.className = 'message error';
+                return;
+            }
+            
             signupMessage.textContent = 'Creating your account...';
             signupMessage.className = 'message info';
             
@@ -367,8 +465,18 @@
                 const isSuccess = Math.random() > 0.2;
                 
                 if (isSuccess) {
-                    signupMessage.textContent = 'Account created successfully! Redirecting to login...';
+                    signupMessage.textContent = 'Account created successfully! You can now log in.';
                     signupMessage.className = 'message success';
+                    
+                    // Store user data in localStorage (simulating database)
+                    const userData = {
+                        username: username,
+                        email: email,
+                        password: password, // In real app, this would be hashed
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    localStorage.setItem('user_' + username, JSON.stringify(userData));
                     
                     // Switch to login after successful registration
                     setTimeout(() => {
@@ -398,15 +506,29 @@
             }, 1500);
         });
         
-        // Initialize with a demo message
+        // Check for existing session on page load
         window.addEventListener('load', function() {
-            loginMessage.textContent = 'Enter your credentials to sign in';
-            loginMessage.className = 'message info';
+            displayDeviceInfo();
             
-            setTimeout(() => {
-                loginMessage.textContent = '';
-                loginMessage.className = 'message';
-            }, 3000);
+            const existingSession = localStorage.getItem('userSession');
+            if (existingSession) {
+                const session = JSON.parse(existingSession);
+                loginMessage.textContent = `Welcome back! You are logged in from ${session.device}`;
+                loginMessage.className = 'message info';
+                
+                setTimeout(() => {
+                    loginMessage.textContent = 'You can log in with a different account if needed';
+                    loginMessage.className = 'message';
+                }, 3000);
+            } else {
+                loginMessage.textContent = 'Enter your credentials to sign in';
+                loginMessage.className = 'message info';
+                
+                setTimeout(() => {
+                    loginMessage.textContent = '';
+                    loginMessage.className = 'message';
+                }, 3000);
+            }
         });
     </script>
 </body>
