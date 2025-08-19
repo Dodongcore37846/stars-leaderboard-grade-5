@@ -8,7 +8,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <style>
-        /* Your existing CSS styles remain exactly the same */
         body {
             background: linear-gradient(135deg, #667eea, #764ba2);
             font-family: 'Roboto', sans-serif;
@@ -26,19 +25,111 @@
             width: 350px;
             max-width: 90vw;
         }
-        /* ... rest of your CSS ... */
+        h2 {
+            text-align: center;
+            margin-bottom: 32px;
+            color: #333;
+            font-weight: 700;
+        }
+        .form-group {
+            margin-bottom: 24px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .toggle {
+            text-align: center;
+            margin-top: 24px;
+            color: #666;
+        }
+        .toggle a {
+            color: #667eea;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .toggle a:hover {
+            text-decoration: underline;
+        }
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 8px;
+            text-align: center;
+        }
+        .success {
+            color: #27ae60;
+            font-size: 14px;
+            margin-top: 8px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <!-- Your existing HTML remains exactly the same -->
     <div class="container" id="login-container">
         <h2 id="form-title">Login</h2>
         <form id="login-form">
-            <!-- ... your form elements ... -->
+            <div class="form-group">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" required placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" required placeholder="Enter your password">
+            </div>
+            <button type="submit">Login</button>
+            <div id="login-error" class="error"></div>
         </form>
+        
         <form id="signup-form" style="display:none;">
-            <!-- ... your form elements ... -->
+            <div class="form-group">
+                <label for="signup-username">Username</label>
+                <input type="text" id="signup-username" required placeholder="Choose a username">
+            </div>
+            <div class="form-group">
+                <label for="signup-email">Email</label>
+                <input type="email" id="signup-email" required placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="signup-password">Password</label>
+                <input type="password" id="signup-password" required placeholder="Create a password">
+            </div>
+            <button type="submit">Sign Up</button>
+            <div id="signup-error" class="error"></div>
+            <div id="signup-success" class="success"></div>
         </form>
+        
         <div class="toggle">
             <span id="toggle-text">Don't have an account? <a id="show-signup">Sign Up</a></span>
         </div>
@@ -137,6 +228,11 @@
             } catch (error) {
                 console.error('Signup error:', error);
                 handleAuthError(error, signupError);
+                
+                // NEW: Redirect to index.html on registration failure
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 3000);
             }
         });
 
