@@ -12,6 +12,20 @@
 </head>
 <body>
     <!-- Keep all your existing HTML -->
+    <!-- Make sure you have these elements in your HTML -->
+    <form id="loginForm">
+        <input id="login-username" type="text">
+        <input id="login-password" type="password">
+        <div id="loginError"></div>
+    </form>
+    
+    <form id="signupForm">
+        <input id="signup-username" type="text">
+        <input id="signup-email" type="email">
+        <input id="signup-password" type="password">
+        <div id="signupError"></div>
+        <div id="signupSuccess"></div>
+    </form>
 
     <script>
         // Firebase configuration (replace with your actual config)
@@ -29,7 +43,12 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Keep your existing showSignup and showLogin functions
+        // Get form elements
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const loginError = document.getElementById('loginError');
+        const signupError = document.getElementById('signupError');
+        const signupSuccess = document.getElementById('signupSuccess');
 
         // Modified login function
         loginForm.onsubmit = function(e) {
@@ -99,7 +118,12 @@
                     document.getElementById('signup-email').value = '';
                     document.getElementById('signup-password').value = '';
                     
-                    setTimeout(showLogin, 2000);
+                    setTimeout(() => {
+                        // Assuming you have a showLogin function
+                        if (typeof showLogin === 'function') {
+                            showLogin();
+                        }
+                    }, 2000);
                 })
                 .catch((error) => {
                     signupError.textContent = error.message;
@@ -120,7 +144,7 @@
         });
 
         // Initial auth check
-        if (JSON.parse(localStorage.getItem('currentUser')) {
+        if (JSON.parse(localStorage.getItem('currentUser'))) {
             window.location.href = 'index.html';
         }
     </script>
