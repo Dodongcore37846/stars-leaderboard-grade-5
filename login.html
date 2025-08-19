@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Sign Up</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            padding: 40px 32px;
+            width: 350px;
+            max-width: 90vw;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #764ba2;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+        }
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: linear-gradient(90deg, #764ba2, #667eea);
+        }
+        .toggle {
+            text-align: center;
+            margin-top: 18px;
+        }
+        .toggle a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .error-message {
+            color: #ff4444;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .success-message {
+            color: #00C851;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="login-container">
+        <h2 id="form-title">Login</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="login-username">Username</label>
+                <input type="text" id="login-username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Login</button>
+            <div id="login-error" class="error-message"></div>
+        </form>
+        <form id="signup-form" style="display:none;">
+            <div class="form-group">
+                <label for="signup-username">Username</label>
+                <input type="text" id="signup-username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="signup-email">Email</label>
+                <input type="email" id="signup-email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="signup-password">Password</label>
+                <input type="password" id="signup-password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Sign Up</button>
+            <div id="signup-error" class="error-message"></div>
+            <div id="signup-success" class="success-message"></div>
+        </form>
+        <div class="toggle">
+            <span id="toggle-text">Don't have an account? <a id="show-signup">Sign Up</a></span>
+        </div>
+    </div>
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const formTitle = document.getElementById('form-title');
+        const toggleText = document.getElementById('toggle-text');
+        const showSignup = document.getElementById('show-signup');
+        const loginError = document.getElementById('login-error');
+        const signupError = document.getElementById('signup-error');
+        const signupSuccess = document.getElementById('signup-success');
+
+        // Initialize user database in localStorage if it doesn't exist
+        if (!localStorage.getItem('userDatabase')) {
+            localStorage.setItem('userDatabase', JSON.stringify({}));
+        }
+
+        showSignup.onclick = function() {
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+            formTitle.textContent = 'Sign Up';
+            toggleText.innerHTML = 'Already have an account? <a id="show-login">Login</a>';
+            document.getElementById('show-login').onclick = showLogin;
+            loginError.textContent = '';
+            signupError.textContent = '';
+            signupSuccess.textContent = '';
+        };
+
+        function showLogin() {
+            loginForm.style.display = 'block';
+            signupForm.style.display = 'none';
+            formTitle.textContent = 'Login';
+            toggleText.innerHTML = "Don't have an account? <a id='show-signup'>Sign Up</a>";
+            document.getElementById('show-signup').onclick = showSignup.onclick;
+            loginError.textContent = '';
+            signupError.textContent = '';
+            signupSuccess.textContent = '';
+        }
+
+        // Login form submission
+        loginForm.onsubmit = function(e) {
+            e.preventDefault();
+            loginError.textContent = '';
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Get user database from localStorage
+            const userDatabase = JSON.parse(localStorage.getItem('userDatabase'));
+            
+            // Check if user exists
+            if (!userDatabase[username]) {
+                loginError.textContent = 'Username not found. Please sign up first.';
+                return;
+            }
+            
+            // Check password
+            if (userDatabase[username].password !== password) {
+                loginError.textContent = 'Incorrect password. Please try again.';
+                return;
+            }
+            
+            // Successful login
+            localStorage.setItem('currentUser', JSON.stringify({
+                username: username,
+                email: userDatabase[username].email,
+                isAuthenticated: true
+            }));
+            
+            // Redirect to index.html
+            window.location.href = 'index.html';
+        };
+
+        // Signup form submission
+        signupForm.onsubmit = function(e) {
+            e.preventDefault();
+            signupError.textContent = '';
+            signupSuccess.textContent = '';
+            
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            
+            // Basic validation
+            if (username.length < 4) {
+                signupError.textContent = 'Username must be at least 4 characters.';
+                return;
+            }
+            
+            if (password.length < 6) {
+                signupError.textContent = 'Password must be at least 6 characters.';
+                return;
+            }
+            
+            if (!email.endsWith('@gmail.com')) {
+                signupError.textContent = 'Please use a Gmail address to register.';
+                return;
+            }
+            
+            // Get user database from localStorage
+            const userDatabase = JSON.parse(localStorage.getItem('userDatabase'));
+            
+            // Check if username already exists
+            if (userDatabase[username]) {
+                signupError.textContent = 'Username already taken. Please choose another.';
+                return;
+            }
+            
+            // Check if email already exists
+            for (const user in userDatabase) {
+                if (userDatabase[user].email === email) {
+                    signupError.textContent = 'Email already registered. Please use another email.';
+                    return;
+                }
+            }
+            
+            // Add new user to database
+            userDatabase[username] = {
+                email: email,
+                password: password,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Save updated database to localStorage
+            localStorage.setItem('userDatabase', JSON.stringify(userDatabase));
+            
+            // Show success message and clear form
+            signupSuccess.textContent = 'Registration successful! You can now login.';
+            document.getElementById('signup-username').value = '';
+            document.getElementById('signup-email').value = '';
+            document.getElementById('signup-password').value = '';
+            
+            // Auto-switch to login form after 2 seconds
+            setTimeout(showLogin, 2000);
+        };
+
+        // Check if user is already authenticated
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser && currentUser.isAuthenticated) {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
