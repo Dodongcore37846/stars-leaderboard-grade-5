@@ -319,6 +319,7 @@
             else if (userAgent.includes("Firefox")) browserName = "Mozilla Firefox";
             else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) browserName = "Safari";
             else if (userAgent.includes("Edg")) browserName = "Microsoft Edge";
+            else if (userAgent.includes("Opera") || userAgent.includes("OPR/")) browserName = "Opera";
             
             // OS detection
             let osName = "Unknown OS";
@@ -326,14 +327,14 @@
             else if (userAgent.includes("Mac")) osName = "Mac OS";
             else if (userAgent.includes("Linux")) osName = "Linux";
             else if (userAgent.includes("Android")) osName = "Android";
-            else if (userAgent.includes("iOS")) osName = "iOS";
+            else if (userAgent.includes("like Mac")) osName = "iOS";
             
             // Screen resolution
             const screenResolution = `${screen.width} x ${screen.height}`;
             
-            browserInfo.textContent += browserName;
-            osInfo.textContent += osName;
-            screenInfo.textContent += screenResolution;
+            browserInfo.textContent = `Browser: ${browserName}`;
+            osInfo.textContent = `Operating System: ${osName}`;
+            screenInfo.textContent = `Screen Resolution: ${screenResolution}`;
         }
         
         // Password toggle functionality
@@ -374,6 +375,12 @@
             signupMessage.className = 'message';
         }
         
+        // Validate email format
+        function isValidEmail(email) {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+        
         // Simulate login process with username
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -387,7 +394,7 @@
             // Simulate API call
             setTimeout(() => {
                 // Check if user exists and password is correct
-                const users = JSON.parse(localStorage.getItem('grade5Users') || [];
+                const users = JSON.parse(localStorage.getItem('grade5Users') || '[]');
                 const user = users.find(u => u.username === username && u.password === password);
                 
                 if (user) {
@@ -404,10 +411,19 @@
                     
                     localStorage.setItem('userSession', JSON.stringify(sessionData));
                     
-                    // Redirect after successful login
-                    setTimeout(() => {
-                        window.location.href = 'leaderboard.html';
-                    }, 1500);
+                    // Show redirect countdown
+                    redirectInfo.style.display = 'block';
+                    let countdown = 5;
+                    
+                    const countdownInterval = setInterval(() => {
+                        countdown--;
+                        countdownElement.textContent = countdown;
+                        
+                        if (countdown <= 0) {
+                            clearInterval(countdownInterval);
+                            window.location.href = 'leaderboard.html';
+                        }
+                    }, 1000);
                 } else {
                     loginMessage.textContent = 'Invalid username or password. Please try again.';
                     loginMessage.className = 'message error';
@@ -428,7 +444,9 @@
             
             const os = userAgent.includes("Windows") ? "Windows" : 
                       userAgent.includes("Mac") ? "Mac" : 
-                      userAgent.includes("Linux") ? "Linux" : "Unknown OS";
+                      userAgent.includes("Linux") ? "Linux" : 
+                      userAgent.includes("Android") ? "Android" :
+                      userAgent.includes("iOS") ? "iOS" : "Unknown OS";
             
             return `${deviceType} (${os})`;
         }
@@ -442,8 +460,14 @@
             const confirmPassword = document.getElementById('signup-confirm-password').value;
             
             // Validation
-            if (password !== confirmPassword) {
-                signupMessage.textContent = 'Passwords do not match. Please try again.';
+            if (username.length < 4) {
+                signupMessage.textContent = 'Username must be at least 4 characters long.';
+                signupMessage.className = 'message error';
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                signupMessage.textContent = 'Please enter a valid email address.';
                 signupMessage.className = 'message error';
                 return;
             }
@@ -454,8 +478,8 @@
                 return;
             }
             
-            if (username.length < 4) {
-                signupMessage.textContent = 'Username must be at least 4 characters long.';
+            if (password !== confirmPassword) {
+                signupMessage.textContent = 'Passwords do not match. Please try again.';
                 signupMessage.className = 'message error';
                 return;
             }
@@ -465,11 +489,18 @@
             
             // Simulate API call
             setTimeout(() => {
-                const users = JSON.parse(localStorage.getItem('grade5Users') || []);
+                const users = JSON.parse(localStorage.getItem('grade5Users') || '[]');
                 
                 // Check if username already exists
                 if (users.some(user => user.username === username)) {
                     signupMessage.textContent = 'Username already taken. Please choose another.';
+                    signupMessage.className = 'message error';
+                    return;
+                }
+                
+                // Check if email already exists
+                if (users.some(user => user.email === email)) {
+                    signupMessage.textContent = 'Email already registered. Please use a different email.';
                     signupMessage.className = 'message error';
                     return;
                 }
@@ -510,10 +541,19 @@
                 loginMessage.textContent = `Welcome back! You are logged in from ${session.device}`;
                 loginMessage.className = 'message info';
                 
-                // Redirect to leaderboard after a delay
-                setTimeout(() => {
-                    window.location.href = 'leaderboard.html';
-                }, 2000);
+                // Show redirect countdown
+                redirectInfo.style.display = 'block';
+                let countdown = 5;
+                
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    countdownElement.textContent = countdown;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        window.location.href = 'leaderboard.html';
+                    }
+                }, 1000);
             } else {
                 loginMessage.textContent = 'Enter your credentials to sign in';
                 loginMessage.className = 'message info';
